@@ -4,6 +4,7 @@ const router = express.Router()
 
 /* Create Session */
 router.get('/create', (req, res, next) => {
+    let config = req.appConfig
     res.setHeader('Content-Type', 'application/json');
 
     const token = jwt.sign({ id: 2323 }, "SECRET!@#", {
@@ -15,7 +16,9 @@ router.get('/create', (req, res, next) => {
 
 /* Destroy Session */
 router.post('/destroy', (req, res, next) => {
+    let config = req.appConfig
     let token = req.body.token
+
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({test: "test"}));
 });
