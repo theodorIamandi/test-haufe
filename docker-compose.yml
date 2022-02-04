@@ -1,7 +1,7 @@
 services:
   db:
     container_name: db
-    hostname: localhost
+    hostname: datasource
     image: postgres
     volumes:
       - ./volume:/var/lib/postgresql
@@ -19,6 +19,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=${DATABASE_URL_REMOTE}
     ports:
      - 5000:3000
     volumes:

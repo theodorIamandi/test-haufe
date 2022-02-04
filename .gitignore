@@ -2,9 +2,12 @@
 volume
 node_modules
 npm-debug.log
+package-lock.json
+
 
 prisma/migrations
 
+test-haufe-client/package-lock.json
 test-haufe-client/node_modules
 test-haufe-client/.pnp
 test-haufe-client/.pnp.js
