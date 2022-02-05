@@ -1,15 +1,20 @@
 const express = require('express')
 const router = express.Router()
-const jwt = require("jsonwebtoken");
 
 const recordController = require('../controllers/record');
 
 /* Health Check */
 router.get('/', (req, res, next) => {
     let config = req.app.appConfig;
+    let isRunning = true;
 
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({test: "test"}));
+
+    if(isRunning)
+        res.end(JSON.stringify({isRunning: isRunning}));
+    else res.sendStatus(410)
+
+    next();
 });
 
 /* Create */

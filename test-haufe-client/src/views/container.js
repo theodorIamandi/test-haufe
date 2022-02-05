@@ -2,12 +2,13 @@ import React from "react";
 import {connect} from "react-redux";
 import {templates} from "./type";
 import Header from "./components/header";
-import {onRouteInit} from "../actions/app";
+import {checkApi, onRouteInit} from "../actions/app";
 import Authentication from "./type/authentication";
 
 class Container extends React.Component {
     componentDidMount() {
-        this.routeInit(this.props.params.location.pathname)
+        this.routeInit(this.props.params.location.pathname);
+        this.props.dispatch(checkApi());
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -20,14 +21,18 @@ class Container extends React.Component {
     }
 
     render() {
-        let Template = templates[this.props.template]
+        if(!this.props.app.render.app && !this.props.app.render.authentication)
+            return null;
 
-        return ( <Authentication /> );
+        if(this.props.app.render.authentication)
+            return ( <Authentication /> );
+
+        let Template = templates[this.props.template]
 
         return (
             <ContainerView
                 location={this.props.location}>
-                Template identifier={this.props.identifier} />
+                <Template identifier={this.props.identifier} />
             </ContainerView>
         );
     }

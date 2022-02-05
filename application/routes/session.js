@@ -1,26 +1,19 @@
 const express = require('express')
 const jwt = require("jsonwebtoken");
+const {extractAuth, generateToken, safeObject} = require("../util/functions");
+const {register, tokenAuth, destroyAuthToken, authenticate} = require("../controllers/user");
 const router = express.Router()
 
 /* Create Session */
-router.get('/create', (req, res, next) => {
-    let config = req.appConfig
-    res.setHeader('Content-Type', 'application/json');
+router.get('/auth',authenticate);
 
-    const token = jwt.sign({ id: 2323 }, "SECRET!@#", {
-        expiresIn: 86400
-    }, () => {  });
+/* Create User */
+router.post('/register', register);
 
-    res.end(JSON.stringify({token: token}));
-});
+/* Verify Session */
+router.get('/token-auth', tokenAuth);
 
 /* Destroy Session */
-router.post('/destroy', (req, res, next) => {
-    let config = req.appConfig
-    let token = req.body.token
-
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({test: "test"}));
-});
+router.post('/destroy', destroyAuthToken);
 
 module.exports = router;

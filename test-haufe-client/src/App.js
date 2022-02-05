@@ -1,4 +1,4 @@
-import {BrowserRouter as Router, Route, Routes, Switch} from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import Container from "./views/container";
 import {routes} from "./constants/routes";
 

@@ -16,7 +16,7 @@ model User {
   role          Role @relation(fields: [role_id], references: [id])
   role_id       BigInt
 
-  @@unique([email, password], name: "emailAddress_password")
+  @@unique([email, password], name: "email_password")
 }
 
 model AuthToken {
@@ -24,9 +24,8 @@ model AuthToken {
   user      User    @relation(fields: [user_id], references: [id])
   user_id   BigInt
   token     String  @db.Text
-  secret    String  @db.Text
 
-  @@unique([token, user_id], name: "token_idx")
+  @@unique([token, user_id], name: "token_user_id")
 }
 
 model Role {
