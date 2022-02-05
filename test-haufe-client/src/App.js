@@ -1,4 +1,4 @@
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import {BrowserRouter as Router, Route, Routes, Switch} from "react-router-dom";
 import Container from "./views/container";
 import {routes} from "./constants/routes";
 
@@ -17,16 +17,22 @@ function AppRouting() {
 
 function Routing(props) {
     return (
-        <Routes>
+        <Switch>
             {routes.map((entry, i) => {
                 return (
                     <Route
                         key={entry.id}
                         exact={entry.exact}
                         path={entry.path}
-                        element={<RouteComponent item={entry} /> } /> );
+                        render={(params) =>
+                            <RouteComponent
+                                item={entry}
+                                params={params} />
+                        }
+
+                    /> );
             })}
-        </Routes>
+        </Switch>
     );
 }
 
@@ -34,6 +40,7 @@ function RouteComponent(props) {
     return (
         <Container
             template={props.item.template}
+            params={props.params}
             identifier={props.item.id} /> );
 }
 
