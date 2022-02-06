@@ -1,12 +1,12 @@
 export const menuItems = [
     {
         path: '/',
-        name: "Page X"
+        name: "Main"
     },{
-        path: '/content/test1',
-        name: "Page Y"
+        path: '/content/user',
+        name: "Users"
     },{
-        path: '/content/test2',
-        name: "Page Z"
+        path: '/content/role',
+        name: "Roles"
     }
 ];

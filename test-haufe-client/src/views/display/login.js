@@ -1,7 +1,7 @@
 import React from "react";
 import {auth, handleUserState} from "../../actions/app";
 import {connect} from "react-redux";
-import Link from "react-router-dom/es/Link";
+import { Link } from "react-router-dom";
 
 class Login extends React.Component {
     render() {

@@ -1,7 +1,20 @@
-import {CHECK_API_HEALTH, HANDLE_APP_RENDER, HANDLE_USER_STATE, LOGOUT, ROUTE_INIT} from "../constants/actions";
+import {
+    CHECK_API_HEALTH,
+    HANDLE_APP_RENDER,
+    HANDLE_USER_STATE,
+    INIT_APP,
+    LOGOUT,
+    ROUTE_INIT,
+    SET_USER
+} from "../constants/actions";
 import {getXHR, postXHR} from "../util/functions";
 import Cookies from "universal-cookie/es6";
 import { Buffer } from "buffer";
+
+export const initApp = (payload) => ({
+    type: INIT_APP,
+    payload: payload
+});
 
 export const routeInit = (payload) => ({
     type: ROUTE_INIT,
@@ -23,16 +36,21 @@ export const checkApiHealth = (payload) => ({
     payload: payload
 });
 
+export const logoutUser = (payload) => ({
+   type: LOGOUT,
+   payload: payload
+});
+
+export const setUser = (payload) => ({
+   type: SET_USER,
+   payload: payload
+});
+
 export const onRouteInit = (path) => {
     return (dispatch) => {
         dispatch(routeInit(path))
     };
 }
-
-export const logoutUser = (payload) => ({
-   type: LOGOUT,
-   payload: payload
-});
 
 export const checkUser = (type, data, success, fail) => {
     return (dispatch) => {
@@ -50,25 +68,22 @@ export const checkApi = (type, data, success, fail) => {
 
             let persistent = getPersistentTokens();
             if(typeof persistent.email !== typeof null) {
-                dispatch(auth(
+                dispatch(checkUser(
                     'token',
                     {
                         email: persistent.email,
                         password: persistent.token,
                         jwtToken: persistent.jwtToken,
                         action: "/session/token-auth"
-                    }
+                    },(res) => { dispatch(initApp({})) }
                 ));
             } else
                 dispatch(checkApiHealth({app: false, authentication: true}))
 
             if (success && typeof(success) == "function")
                 success()
-
-
-
         }, (err) => {
-            dispatch(checkApiHealth({app: false, authentication: false}))
+            dispatch(checkApiHealth({app: false, authentication: true}))
 
             if (fail && typeof(fail) == "function")
                 fail()
@@ -125,6 +140,7 @@ export const auth = (type, data, success, fail) => {
 
             dispatch(handleUserState({hasUser: true}))
             dispatch(handleAppRender({app: true, authentication: false}))
+            dispatch(setUser({acl: res.acl, user: res.user}));
 
             if (success && typeof(success) == "function")
                 success()
@@ -146,15 +162,11 @@ export const logout = () => {
             {action: '/session/destroy', auth: getTokenAuth(persistent.token, persistent.jwtToken), data: {}},
             (res) => {
                 let cookies = new Cookies();
-
-                cookies.remove('auth-token');
-                cookies.remove('auth-user');
-                cookies.remove('jwt-token');
-
-                dispatch(logoutUser());
-            }, (err) => {
-
-            })
+                cookies.remove('auth-token', {path: '/'});
+                cookies.remove('auth-user', {path: '/'});
+                cookies.remove('jwt-token', {path: '/'});
+                dispatch(logoutUser({}))
+            }, (err) => { })
     };
 }
 
@@ -174,15 +186,15 @@ export const addAuthCookies = (data) => {
     let cookies = new Cookies()
     cookies.set("auth-user", data.email, {
         path: '/',
-        expires: new Date(new Date().getTime() + (1000 * 60 * 60 * 2))
+        expires: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 90))
     });
     cookies.set("auth-token", data.token, {
         path: '/',
-        expires: new Date(new Date().getTime() + (1000 * 60 * 60 * 2))
+        expires: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 90))
     });
     cookies.set("jwt-token", data.jwtToken, {
         path: '/',
-        expires: new Date(new Date().getTime() + (1000 * 60 * 60 * 2))
+        expires: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 90))
     });
 }
 

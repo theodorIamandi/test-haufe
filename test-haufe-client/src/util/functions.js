@@ -71,20 +71,48 @@ const processXHR = (payload, success, fail) => {
             return response.json()
         })
         .then((data) => {
-            success(data);
+            if (success && typeof(success) == "function")
+                success(data);
         })
         .catch((error) => {
-            fail(error)
+            if (fail && typeof(fail) == "function")
+                fail(error)
         });
 };
 
-const buildQueryString = (data) => {
+
+export const buildQueryString = (data) => {
     let keys = Object.keys(data.obj);
     let querystring = "";
 
     for(let i = 0; i < keys.length; i++) {
-        //let key = keys[i];
+        if(typeof data.obj[keys[i]] === typeof Object.prototype) {
+            let key = keys[i];
+            if(data.hasOwnProperty("level") && data.level > 0)
+                key = "[" + keys[i] + "]";
+            querystring += buildQueryString({
+                obj: data.obj[keys[i]],
+                masterKey: (data.hasOwnProperty("masterKey") ? (data.masterKey
+                    + encodeURIComponent("[") + keys[i] + encodeURIComponent("]")) : key),
+                prev: keys[i],
+                level: data.hasOwnProperty("masterKey") ? (data.level+1) : 0
+            });
+        } else {
+            let key = keys[i];
+            if(data.hasOwnProperty("masterKey")) {
+                key = data.masterKey
+                    + (data.level > 0 ? (
+                        encodeURIComponent("[")
+                        + (data.prev === "value" ? keys[i] : keys[i]) + encodeURIComponent("]")
+                    ) : keys[i]);
+
+
+            }
+            querystring += (i === 0 && !data.hasOwnProperty("masterKey") ? "" : "&")
+                + key + "="
+                + encodeURI(data.obj[keys[i]]) ;
+        }
     }
 
     return querystring;
-}
+};

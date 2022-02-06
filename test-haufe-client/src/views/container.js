@@ -8,7 +8,8 @@ import Authentication from "./type/authentication";
 class Container extends React.Component {
     componentDidMount() {
         this.routeInit(this.props.params.location.pathname);
-        this.props.dispatch(checkApi());
+        if(!this.props.app.isInitialized)
+            this.props.dispatch(checkApi(this.props.app.isInitialized));
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -32,7 +33,9 @@ class Container extends React.Component {
         return (
             <ContainerView
                 location={this.props.location}>
-                <Template identifier={this.props.identifier} />
+                <Template
+                    params={this.props.params.match.params}
+                    identifier={this.props.identifier} />
             </ContainerView>
         );
     }

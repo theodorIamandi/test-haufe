@@ -1,6 +1,6 @@
 import React from "react";
 import Register from "../display/register";
-import Dynamic from "../display/dynamic";
+import Main from "../display/main";
 
 export default class Page extends React.Component {
     constructor(props) {
@@ -8,7 +8,7 @@ export default class Page extends React.Component {
 
         this.views = {
             register: Register,
-            dynamic: Dynamic
+            main: Main
         };
     }
 

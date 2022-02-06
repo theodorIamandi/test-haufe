@@ -1,10 +1,10 @@
 import React from "react";
 
-export default class Dynamic extends React.Component {
+export default class Main extends React.Component {
     render() {
         return (
             <React.Fragment>
-                Dynamic Content
+                <h4>Main Page</h4>
             </React.Fragment>
         );
     }

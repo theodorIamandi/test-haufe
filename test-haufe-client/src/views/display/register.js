@@ -1,8 +1,18 @@
 import React from "react";
 import {connect} from "react-redux";
 import {handleAppRender, handleUserState, register} from "../../actions/app";
+import {Link} from "react-router-dom";
 
 class Register extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            valid: false,
+            renderError: false,
+            message: "Passwords mismatch"
+        }
+    }
     render() {
         return (
             <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -15,19 +25,24 @@ class Register extends React.Component {
                         onSubmit={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-
-                            this.props.dispatch(register(
-                                'basic',
-                                {
-                                    email: e.target.email.value,
-                                    password: e.target.password.value,
-                                    name: e.target.name.value,
-                                    action: "/session/register"
-                                }
-                            ));
-
+                            if(e.target.password.value !== e.target.confirmPassword.value)
+                                this.setState({valid: false, renderError: true});
+                            else {
+                                this.setState({valid: true, renderError: false});
+                                this.props.dispatch(register(
+                                    'basic',
+                                    {
+                                        email: e.target.email.value,
+                                        password: e.target.password.value,
+                                        name: e.target.name.value,
+                                        action: "/session/register"
+                                    }));
+                            }
                         }}
                         className="mt-8 space-y-6">
+                        {this.state.renderError && !this.state.valid ? (
+                            <span className={"text-red-300"}>{this.state.message}</span>
+                        ) : null}
                         <input type="hidden" name="remember" value="true" />
                         <div className="rounded-md shadow-sm -space-y-px">
                             <div>
@@ -62,13 +77,14 @@ class Register extends React.Component {
 
                             <div className="text-sm text-center flex">
                                 <p className={"px-2"}>Go to</p>
-                                <button
+                                <Link
+                                    to={"#"}
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
                                         this.props.changeDisplay("login")
                                     }}
-                                    className="font-medium text-indigo-600 hover:text-indigo-500">Login</button>
+                                    className="font-medium text-indigo-600 hover:text-indigo-500">Login</Link>
                             </div>
                         </div>
 

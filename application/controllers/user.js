@@ -1,37 +1,30 @@
 const {extractAuth, safeObject, generateToken} = require("../util/functions");
 const jwt = require("jsonwebtoken");
-const {findUnique, findUniqueToken} = require("../services/user");
+const {findUniqueToken, createTokens, findUniqueUser} = require("../services/user");
+const {findUniqueRecord, createRecord} = require("../services/record");
 
 const authenticate = async (req, res, next) => {
     let config = req.app.appConfig
-
     let auth = await extractAuth('email', req.headers['authorization'].split(' ')[1], 'password');
+    let user = await findUniqueUser(config, auth);
 
-    let user = await findUnique(config, auth);
-
-    if(user === null)
-    {
+    if(user === null) {
         res.setHeader('Content-Type', 'application/json');
         res.status(401);
         res.end();
     }
     else {
-        let authToken = await config.prisma.authToken.create({
-            data: {
-                user_id: user.id,
-                token: await generateToken(),
-            }
-        });
-
-        const jwtToken = jwt.sign({role_id: user.role_id, user_id: user.id}, "SECRET!@#", {
-            expiresIn: 1000 * 60 * 60 * 2
-        });
-
+        let role = await findUniqueRecord(config, 'role', {id: user.role_id });
+        let tokens = await createTokens(config, user.id, {
+            user_id: user.id,
+            acl: JSON.parse(role.acl)
+        })
 
         let resData = {
-            token: authToken.token,
-            jwtToken: jwtToken,
-            user: {id: user.id, email: user.email, name: user.name}
+            token: tokens.token,
+            jwtToken: tokens.jwtToken,
+            acl: JSON.parse(role.acl),
+            user: {id: user.id, email: user.email, name: user.name, acl: JSON.parse(role.acl)}
         };
 
         res.setHeader('Content-Type', 'application/json');
@@ -45,29 +38,26 @@ const register = async (req, res, next) => {
 
     let auth = await extractAuth('email', req.headers['authorization'].split(' ')[1], 'password');
 
-    let user = safeObject(await config.prisma.user.create({
-        data: {
+    let user = await createRecord(config,{
+        entity: "User",
+        payload: {
             email: auth.email,
             name: req.body.name,
             password: auth.password,
             role_id: 1
         }
-    }));
-
-    let authToken =  await config.prisma.authToken.create({
-        data: {
-            user_id: user.id,
-            token:  await generateToken(),
-        }
     });
 
-    const jwtToken = jwt.sign({ role_id: 1, user_id: user.id }, "SECRET!@#", {
-        expiresIn: 1000 * 60 * 60 * 2,
-    });
+    let role = await findUniqueRecord(config, 'role', {id: user.role_id });
+    let tokens = await createTokens(config, user.id, {
+        user_id: user.id,
+        acl: JSON.parse(role.acl)
+    })
 
     let resData = {
-        token: authToken.token,
-        jwtToken: jwtToken,
+        token: tokens.token,
+        jwtToken: tokens.jwtToken,
+        acl: JSON.parse(role.acl),
         user: { id: user.id, email: user.email, name: user.name }
     };
 
@@ -80,11 +70,19 @@ const tokenAuth = async (req, res, next) => {
     let config = req.app.appConfig
     let decodedJwt = jwt.verify(req.headers['x-jwt'], "SECRET!@#", {});
 
+
     let token = await findUniqueToken(config, {
         token: req.headers['authorization'].split(" ")[1],
         user_id: decodedJwt.user_id,
     });
 
+    let user = await findUniqueRecord(config, 'user', {
+        id: decodedJwt.user_id});
+
+    let resData = {
+        acl: decodedJwt.acl,
+        user: { id: user.id, email: user.email, name: user.name }
+    };
 
     res.setHeader('Content-Type', 'application/json');
 
@@ -94,7 +92,7 @@ const tokenAuth = async (req, res, next) => {
     }
     else
     {
-        res.end(JSON.stringify({}));
+        res.end(JSON.stringify(resData));
         next();
     }
 

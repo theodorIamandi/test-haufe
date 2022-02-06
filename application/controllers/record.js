@@ -7,7 +7,7 @@ const create = async (req, res, next) => {
         { entity: req.params.entity, payload: req.body });
 
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(record));
+    res.end(JSON.stringify({}));
 };
 
 const read = async (req, res, next) => {
@@ -22,7 +22,7 @@ const read = async (req, res, next) => {
 
 const list = async (req, res, next) => {
     let config = req.app.appConfig;
-    let data = { entity: req.params.entity, ...req.query };
+    let data = { entity: req.params.entity, query: req.query };
 
     let recordsList = await readRecords(config, data);
 
