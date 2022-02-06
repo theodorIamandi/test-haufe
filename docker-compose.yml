@@ -21,6 +21,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - DATABASE_URL=${DATABASE_URL_REMOTE}
+      - SALT_KEY=${SALT_KEY}
     ports:
      - 5000:3000
     volumes:
@@ -30,7 +31,6 @@ services:
     restart: unless-stopped
     depends_on:
       - db
-
   www:
     container_name: www
     hostname: localhost
@@ -38,7 +38,7 @@ services:
       context: ./test-haufe-client
       dockerfile: Dockerfile
     volumes:
-      - /usr/src/app/
+      - /usr/src/app
     ports:
       - 80:80
     restart: unless-stopped

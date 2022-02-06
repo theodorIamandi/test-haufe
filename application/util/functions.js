@@ -17,7 +17,7 @@ const extractAuth = async function (userKey, param, type) {
 
 const hash = function (password) {
     return new Promise(function(resolve, reject) {
-        bcrypt.hash(password, process.env.SALT_KEY,(err, hash) => {
+        bcrypt.hash(password, '$2a$10$k95uC.XARe3wPsto2mD34O',(err, hash) => {
             resolve(hash)
         });
     }.bind(this))

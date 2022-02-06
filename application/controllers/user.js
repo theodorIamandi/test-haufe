@@ -6,6 +6,7 @@ const {findUniqueRecord, createRecord} = require("../services/record");
 const authenticate = async (req, res, next) => {
     let config = req.app.appConfig
     let auth = await extractAuth('email', req.headers['authorization'].split(' ')[1], 'password');
+
     let user = await findUniqueUser(config, auth);
 
     if(user === null) {
