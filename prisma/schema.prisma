@@ -34,5 +34,7 @@ model Role {
     name    String
     acl     String
     users   User[]
+
+    @@unique([name], name: "name_idx")
 }
 

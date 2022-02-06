@@ -26,7 +26,6 @@ const authenticate = async (req, res, next) => {
             acl: JSON.parse(role.acl),
             user: {id: user.id, email: user.email, name: user.name, acl: JSON.parse(role.acl)}
         };
-
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(resData));
         next();

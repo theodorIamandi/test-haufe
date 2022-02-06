@@ -22,7 +22,7 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL_REMOTE}
     ports:
-     - 4000:4000
+     - 5000:3000
     volumes:
       - ./bin:/usr/src/app/bin
       - ./application:/usr/src/app/application

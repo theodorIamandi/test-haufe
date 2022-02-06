@@ -10,6 +10,7 @@ export const getXHR = (data, success, error) => {
     let payload = {
         init: {
             method: "GET",
+            mode: 'cors',
             headers: headers
         },
         url: data.action + querystring
@@ -66,7 +67,7 @@ export const deleteXHR = (data, success, error) => {
 };
 
 const processXHR = (payload, success, fail) => {
-    fetch(payload.url, payload.init)
+    fetch("http://localhost:5000" + payload.url, payload.init)
         .then((response) => {
             return response.json()
         })
